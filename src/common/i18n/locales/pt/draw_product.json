@@ -1,0 +1,15 @@
+{
+  "campaigns_not_found": "Produtos do sorteio não encontrados",
+  "not_found": "Produto do sorteio não encontrado",
+
+  "ticket": {
+    "tickets_not_found": "Tickets não encontrados",
+    "not_found": "Ticket não encontrado"
+  },
+
+  "winner": {
+    "winners_not_found": "Vencedores não encontrados",
+    "not_found": "Vencedor não encontrado",
+    "already_exists": "Vencedor já existe"
+  }
+}

@@ -1,0 +1,22 @@
+version: '3'
+
+services:
+  postgres:
+    image: postgres
+    container_name: listen-songs-dev
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: listen-songs-dev
+    ports:
+      - '8100:5432'
+  dbtest:
+    image: postgres
+    restart: always
+    container_name: listen-songs-test
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: listen-songs-test
+    ports:
+      - '8101:5432'

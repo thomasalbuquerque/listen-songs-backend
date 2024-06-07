@@ -1,0 +1,447 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator dbml {
+  provider = "prisma-dbml-generator"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                 String              @id @default(uuid()) @map("id") @db.Uuid
+  email              String              @unique @map("email")
+  password           String              @map("password")
+  username           String              @unique @map("username")
+  inviterCode        String              @unique @map("inviter_code")
+  invitedById        String?             @map("invited_by_id") @db.Uuid
+  inviter            User?               @relation("inviterAffiliated", fields: [invitedById], references: [id])
+  affiliated         User[]              @relation("inviterAffiliated")
+  active             Boolean             @default(true) @map("active")
+  blocked            Boolean             @default(false) @map("blocked")
+  emailVerified      Boolean             @default(false) @map("email_verified")
+  profileImage       String?             @map("profile_image")
+  refreshToken       String?             @map("refresh_token")
+  createdAt          DateTime            @default(now()) @map("created_at")
+  updatedAt          DateTime            @updatedAt @map("updated_at")
+  Settings           Settings?
+  PaymentData        PaymentData?
+  SpotifyData        SpotifyData?
+  PersonalData       PersonalData?
+  HeardSongsUser     HeardSong[]         @relation("HeardSongUser")
+  HeardSongsInviter  HeardSong[]         @relation("HeardSongInviter")
+  EmailCodes         EmailCode[]
+  CampaignTickets    CampaignTicket[]
+  CampaignWinners    CampaignWinner[]
+  UserDailyReports   UserDailyReport[]
+  UserMonthlyReports UserMonthlyReport[]
+  Followers          Follow[]            @relation("Followers")
+  Following          Follow[]            @relation("Following")
+  Stories            Story[]
+  DrawProductTicket  DrawProductTicket[]
+  DrawProductWinner  DrawProductWinner[]
+
+  @@map("users")
+}
+
+model Settings {
+  id        String   @id @default(uuid()) @map("id") @db.Uuid
+  userId    String   @unique @map("user_id") @db.Uuid
+  User      User     @relation(fields: [userId], references: [id])
+  language  String   @map("language")
+  Mobiles   Mobile[]
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("settings")
+}
+
+model Mobile {
+  id            String   @id @default(uuid()) @map("id") @db.Uuid
+  settingsId    String   @map("settings_id") @db.Uuid
+  Settings      Settings @relation(fields: [settingsId], references: [id])
+  deviceId      String   @unique @map("device_id")
+  firebaseToken String?  @map("firebase_token")
+  deviceOS      String   @map("deviceOS")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  @@map("mobiles")
+}
+
+model PersonalData {
+  id            String   @id @default(uuid()) @map("id") @db.Uuid
+  userId        String   @unique @map("user_id") @db.Uuid
+  user          User     @relation(fields: [userId], references: [id])
+  firstName     String   @map("first_name")
+  lastName      String   @map("last_name")
+  idCard        String   @unique @map("id_card")
+  birthDate     DateTime @map("birth_date")
+  phone         String   @unique @map("phone")
+  phoneVerified Boolean  @default(false) @map("phone_verified")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+  Address       Address?
+  Sms           Sms[]
+
+  @@map("personal_data")
+}
+
+model Address {
+  id             String       @id @default(uuid()) @map("id") @db.Uuid
+  personalDataId String       @unique @map("personal_data_id") @db.Uuid
+  PersonalData   PersonalData @relation(fields: [personalDataId], references: [id])
+  zipCode        String       @map("zip_code")
+  street         String       @map("street")
+  number         String?      @map("number")
+  complement     String?      @map("complement")
+  neighborhood   String       @map("neighborhood")
+  city           String       @map("city")
+  state          String       @map("state")
+  country        String       @map("country")
+  createdAt      DateTime     @default(now()) @map("created_at")
+  updatedAt      DateTime     @updatedAt @map("updated_at")
+
+  @@map("addresses")
+}
+
+model Sms {
+  id             String       @id @default(uuid()) @map("id") @db.Uuid
+  personalDataId String       @map("personal_data_id") @db.Uuid
+  PersonalData   PersonalData @relation(fields: [personalDataId], references: [id])
+  code           Int          @map("code")
+  phone          String       @default("") @map("phone")
+  attempts       Int          @default(0) @map("attempts") @db.SmallInt
+  campaignId     String?      @map("campaign_id")
+  messageId      String?      @map("message_id")
+  errorMessage   String?      @map("error_message")
+  createdAt      DateTime     @default(now()) @map("created_at")
+  updatedAt      DateTime     @updatedAt @map("updated_at")
+
+  @@map("sms")
+}
+
+model PaymentData {
+  id        String     @id @default(uuid()) @map("id") @db.Uuid
+  userId    String     @unique @map("user_id") @db.Uuid
+  user      User       @relation(fields: [userId], references: [id])
+  wallet    String?    @map("wallet")
+  token     Decimal    @default(0) @map("token") @db.Decimal(26, 18)
+  yupoints  BigInt     @default(0) @map("yupoints")
+  version   Int        @default(0) @map("version") @db.SmallInt
+  createdAt DateTime   @default(now()) @map("created_at")
+  updatedAt DateTime   @updatedAt @map("updated_at")
+  Withdraws Withdraw[]
+
+  @@map("payment_data")
+}
+
+model Withdraw {
+  id              String      @id @default(uuid()) @map("id") @db.Uuid
+  paymentDataId   String      @map("payment_data_id") @db.Uuid
+  paymentData     PaymentData @relation(fields: [paymentDataId], references: [id])
+  toWallet        String      @map("to_wallet")
+  hash            String      @unique @map("hash")
+  grossValue      Decimal     @map("gross_value") @db.Decimal(26, 18)
+  tax             Decimal     @map("tax") @db.Decimal(26, 18)
+  netValue        Decimal     @map("net_value") @db.Decimal(26, 18)
+  success         Boolean     @default(false) @map("success")
+  transactionDate DateTime    @default(now()) @map("transaction_date")
+
+  @@map("withdraws")
+}
+
+model SpotifyData {
+  id           String   @id @default(uuid()) @map("id") @db.Uuid
+  userId       String   @unique @map("user_id") @db.Uuid
+  User         User     @relation(fields: [userId], references: [id])
+  spotifyId    String   @unique @map("spotify_id")
+  accessToken  String   @map("access_token")
+  refreshToken String   @map("refresh_token")
+  expiresIn    BigInt   @map("expires_in")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  @@map("spotify_data")
+}
+
+model HeardSong {
+  id                    String   @id @default(uuid()) @map("id")
+  //
+  userId                String   @map("user_id") @db.Uuid
+  user                  User     @relation("HeardSongUser", fields: [userId], references: [id])
+  userRewardToken       Decimal  @map("user_reward_token") @db.Decimal(26, 18)
+  userRewardYupoints    Int      @map("user_reward_yupoints") @db.SmallInt
+  //
+  inviterId             String?  @map("inviter_id") @db.Uuid
+  inviter               User?    @relation("HeardSongInviter", fields: [inviterId], references: [id])
+  inviterRewardToken    Decimal? @map("inviter_reward_token") @db.Decimal(26, 18)
+  inviterRewardYupoints Int?     @map("inviter_reward_yupoints") @db.SmallInt
+  //
+  songId                String   @map("songId") @db.Uuid
+  Song                  Song     @relation(fields: [songId], references: [id])
+  playlistId            String   @map("playlist_id") @db.Uuid
+  Playlist              Playlist @relation(fields: [playlistId], references: [id])
+  createdAt             DateTime @default(now()) @map("created_at")
+
+  @@map("heard_songs")
+}
+
+model Song {
+  id              String            @id @default(uuid()) @map("id") @db.Uuid
+  songIdSpotify   String            @unique @map("song_id_spotify")
+  artistIdSpotify String            @map("artist_id_spotify")
+  seconds         Int               @map("seconds") @db.SmallInt
+  giveToken       Boolean           @map("give_token")
+  giveYupoints    Boolean           @map("give_yupoints")
+  tokenBrl        Float             @map("token_brl") @db.Real
+  createdAt       DateTime          @default(now()) @map("created_at")
+  updatedAt       DateTime          @updatedAt @map("updated_at")
+  HeardSongs      HeardSong[]
+  AllowedSongs    AllowedSong[]
+  SongDailyReport SongDailyReport[]
+
+  @@map("songs")
+}
+
+model Playlist {
+  id                String      @id @default(uuid()) @map("id") @db.Uuid
+  playlistIdSpotify String      @unique @map("playlist_id_spotify")
+  playlistName      String      @map("playlist_name")
+  playlistOwnerId   String      @map("playlist_owner_id")
+  createdAt         DateTime    @default(now()) @map("created_at")
+  HeardSongs        HeardSong[]
+
+  @@map("playlists")
+}
+
+model AllowedSong {
+  id         String   @id @default(uuid()) @map("id") @db.Uuid
+  songId     String   @map("song_id") @db.Uuid
+  Song       Song     @relation(fields: [songId], references: [id])
+  campaignId String   @map("campaign_id") @db.Uuid
+  Campaign   Campaign @relation(fields: [campaignId], references: [id])
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  @@unique([songId, campaignId])
+  @@map("allowed_songs")
+}
+
+enum Status {
+  planned
+  active
+  paused
+  finished
+  canceled
+}
+
+model Campaign {
+  id              String           @id @default(uuid()) @map("id") @db.Uuid
+  title           String           @map("title")
+  description     String           @map("description")
+  songsChunk      Int              @map("songs_chunk") @db.SmallInt
+  ticketPriceBrl  Float            @map("ticket_price_brl") @db.Real
+  status          Status           @default(planned) @map("status")
+  awards          String[]         @map("awards")
+  startedAt       DateTime?        @map("started_at")
+  finishedAt      DateTime?        @map("finished_at")
+  createdAt       DateTime         @default(now()) @map("created_at")
+  updatedAt       DateTime         @updatedAt @map("updated_at")
+  AllowedSongs    AllowedSong[]
+  CampaignTickets CampaignTicket[]
+  CampaignWinners CampaignWinner[]
+
+  @@map("campaigns")
+}
+
+enum Source {
+  earned
+  app
+}
+
+model CampaignTicket {
+  id           String   @id @default(uuid()) @map("id")
+  userId       String   @map("user_id") @db.Uuid
+  user         User     @relation(fields: [userId], references: [id])
+  campaignId   String   @map("campaign_id") @db.Uuid
+  campaign     Campaign @relation(fields: [campaignId], references: [id])
+  ticketNumber Int      @map("ticket_number")
+  source       Source   @map("source")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  @@unique([ticketNumber, campaignId])
+  @@map("campaigns_tickets")
+}
+
+model CampaignWinner {
+  id             String    @id @default(uuid()) @map("id")
+  userId         String    @map("user_id") @db.Uuid
+  user           User      @relation(fields: [userId], references: [id])
+  campaignId     String    @map("campaign_id") @db.Uuid
+  campaign       Campaign  @relation(fields: [campaignId], references: [id])
+  winnerPosition Int       @map("winner_position")
+  paymentAt      DateTime? @map("payment_at")
+  createdAt      DateTime  @default(now()) @map("created_at")
+
+  @@unique([campaignId, userId])
+  @@map("campaigns_winners")
+}
+
+enum Category {
+  forgotPassword
+  emailConfirmation
+}
+
+model EmailCode {
+  id        String   @id @default(uuid()) @map("id") @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  User      User     @relation(fields: [userId], references: [id])
+  userEmail String   @map("user_email")
+  code      String   @map("code")
+  expiresAt DateTime @map("expires_at")
+  active    Boolean  @default(true) @map("active")
+  emailSent Boolean  @default(false) @map("email_sent")
+  category  Category @map("category")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("email_codes")
+}
+
+model UserDailyReport {
+  id                       String   @id @default(uuid()) @map("id")
+  userId                   String   @map("user_id") @db.Uuid
+  user                     User     @relation(fields: [userId], references: [id])
+  date                     DateTime @map("date")
+  sumUserRewardToken       Decimal  @map("sum_user_reward_token") @db.Decimal(26, 18)
+  sumUserRewardYupoints    BigInt   @map("sum_user_reward_yupoints")
+  sumInvitedRewardToken    Decimal  @map("sum_invited_reward_token") @db.Decimal(26, 18)
+  sumInvitedRewardYupoints BigInt   @map("sum_invited_reward_yupoints")
+  heardSongsCount          Int      @map("heard_songs_count")
+  createdAt                DateTime @default(now()) @map("created_at")
+
+  @@map("user_daily_reports")
+}
+
+model UserMonthlyReport {
+  id                       String   @id @default(uuid()) @map("id")
+  userId                   String   @map("user_id") @db.Uuid
+  user                     User     @relation(fields: [userId], references: [id])
+  month                    Int      @map("month") @db.SmallInt
+  year                     Int      @map("year") @db.SmallInt
+  sumUserRewardToken       Decimal  @map("sum_user_reward_token") @db.Decimal(26, 18)
+  sumUserRewardYupoints    BigInt   @map("sum_user_reward_yupoints")
+  sumInvitedRewardToken    Decimal  @map("sum_invited_reward_token") @db.Decimal(26, 18)
+  sumInvitedRewardYupoints BigInt   @map("sum_invited_reward_yupoints")
+  heardSongsCount          Int      @map("heard_songs_count")
+  createdAt                DateTime @default(now()) @map("created_at")
+
+  @@map("user_monthly_reports")
+}
+
+model SongDailyReport {
+  id                  String   @id @default(uuid()) @map("id")
+  songId              String   @map("song_id") @db.Uuid
+  song                Song     @relation(fields: [songId], references: [id])
+  date                DateTime @map("date")
+  playlist            Json     @map("playlists") // [{ playlistIdSpotify: "string", playlistName: "string", quantity: 20}, { playlistIdSpotify: "string", playlistName: "string", quantity: 20}]
+  sumUsersToken       Decimal  @map("sum_users_token") @db.Decimal(26, 18)
+  sumUsersYupoints    BigInt   @map("sum_users_yupoints")
+  sumInvitersToken    Decimal  @map("sum_inviters_token") @db.Decimal(26, 18)
+  sumInvitersYupoints BigInt   @map("sum_inviters_yupoints")
+  heardSongsCount     Int      @map("heard_songs_count")
+  createdAt           DateTime @default(now()) @map("created_at")
+
+  @@map("song_daily_reports")
+}
+
+model Follow {
+  id          String   @id @default(uuid()) @map("id") @db.Uuid
+  followerId  String   @map("follower_id") @db.Uuid
+  follower    User     @relation("Followers", fields: [followerId], references: [id])
+  followingId String   @map("following_id") @db.Uuid
+  following   User     @relation("Following", fields: [followingId], references: [id])
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@unique([followerId, followingId])
+  @@map("follows")
+}
+
+model Story {
+  id        String   @id @default(uuid()) @map("id") @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  user      User     @relation(fields: [userId], references: [id])
+  valid     Boolean  @default(true) @map("valid")
+  imageUrl  String   @map("image_url")
+  expiresAt DateTime @map("expires_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("stories")
+}
+
+model StakePhrase {
+  oldUserId      String    @unique @map("old_user_id") @db.Uuid
+  email          String    @map("email")
+  password       String    @map("password")
+  phrase         String    @map("phrase")
+  tokenInStake   String    @map("token_in_stake")
+  tokenInWallet  String    @map("token_in_wallet")
+  publicAddress  String    @map("public_address")
+  privateAddress String    @map("private_address")
+  lastGetAt      DateTime? @map("last_get_at")
+  createdAt      DateTime  @default(now()) @map("created_at")
+
+  @@map("stake_phrases")
+}
+
+model DrawProductTicket {
+  id            String      @id @default(uuid()) @map("id") @db.Uuid
+  userId        String      @map("user_id") @db.Uuid
+  user          User        @relation(fields: [userId], references: [id])
+  drawProductId String      @map("draw_products_id") @db.Uuid
+  drawProduct   DrawProduct @relation(fields: [drawProductId], references: [id])
+  ticketNumber  Int         @map("ticket_number")
+  source        Source      @map("source")
+  createdAt     DateTime    @default(now()) @map("created_at")
+  updatedAt     DateTime    @updatedAt @map("updated_at")
+
+  @@unique([ticketNumber, drawProductId])
+  @@map("draw_products_tickets")
+}
+
+model DrawProduct {
+  id                 String              @id @default(uuid()) @map("id") @db.Uuid
+  title              String              @map("title")
+  description        String              @map("description")
+  priceToken         Decimal             @map("price_token") @db.Decimal(26, 18)
+  priceYupoints      BigInt              @map("price_yupoints")
+  status             Status              @default(planned) @map("status")
+  startedAt          DateTime?           @map("started_at")
+  finishedAt         DateTime?           @map("finished_at")
+  createdAt          DateTime            @default(now()) @map("created_at")
+  updatedAt          DateTime            @updatedAt @map("updated_at")
+  DrawProductTickets DrawProductTicket[]
+  DrawProductWinners DrawProductWinner[]
+
+  @@map("draw_products")
+}
+
+model DrawProductWinner {
+  id            String      @id @default(uuid()) @map("id") @db.Uuid
+  userId        String      @map("user_id") @db.Uuid
+  user          User        @relation(fields: [userId], references: [id])
+  drawProductId String      @map("draw_products_id") @db.Uuid
+  drawProduct   DrawProduct @relation(fields: [drawProductId], references: [id])
+  paymentAt     DateTime?   @map("payment_at")
+  createdAt     DateTime    @default(now()) @map("created_at")
+  updatedAt     DateTime    @updatedAt @map("updated_at")
+
+  @@unique([drawProductId, userId])
+  @@map("draw_products_winners")
+}

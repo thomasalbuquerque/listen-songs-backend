@@ -1,0 +1,18 @@
+{
+  "not_found": "Dados de pagamento não encontrado",
+  "insufficient_funds": "Fundos insuficientes",
+  "already_exists_for_this_user": "Dados de pagamento já existem para este usuário",
+  "insufficient_balance": "Saldo insuficiente",
+
+  "withdraw": {
+    "withdraws_not_found": "Saques não encontrados",
+    "error_calculating_tax": "Erro ao calcular a tax de saque",
+    "error_while_performing_withdraw": "Erro ao realizar o saque. Entre em contato com o suporte",
+    "push_notification": {
+      "success": {
+        "title": "Saque realizado com sucesso",
+        "body": "Seu saque no valor de {property} tokens foi realizado com sucesso. Em breve você receberá o valor solicitado"
+      }
+    }
+  }
+}

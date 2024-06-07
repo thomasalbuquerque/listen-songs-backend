@@ -1,0 +1,18 @@
+{
+  "not_found": "Datos de pago no encontrados",
+  "insufficient_funds": "Fondos insuficientes",
+  "already_exists_for_this_user": "Los datos de pago ya existen para este usuario",
+  "insufficient_balance": "Saldo insuficiente",
+
+  "withdraw": {
+    "withdraws_not_found": "Retiros no encontrados",
+    "error_calculating_tax": "Error al calcular el tax de retiro",
+    "error_while_performing_withdraw": "Error al realizar el retiro. Contacta al soporte",
+    "push_notification": {
+      "success": {
+        "title": "Retiro exitoso",
+        "body": "Su retiro de {property} tokens se ha realizado correctamente. En breve recibirá la cantidad solicitada"
+      }
+    }
+  }
+}

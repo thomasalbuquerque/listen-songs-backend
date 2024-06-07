@@ -1,0 +1,458 @@
+//// ------------------------------------------------------
+//// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+//// ------------------------------------------------------
+
+Table users {
+  id String [pk]
+  email String [unique, not null]
+  password String [not null]
+  username String [unique, not null]
+  inviterCode String [unique, not null]
+  invitedById String
+  inviter users
+  affiliated users [not null]
+  active Boolean [not null, default: true]
+  blocked Boolean [not null, default: false]
+  emailVerified Boolean [not null, default: false]
+  profileImage String
+  refreshToken String
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  Settings settings
+  PaymentData payment_data
+  SpotifyData spotify_data
+  PersonalData personal_data
+  HeardSongsUser heard_songs [not null]
+  HeardSongsInviter heard_songs [not null]
+  EmailCodes email_codes [not null]
+  CampaignTickets campaigns_tickets [not null]
+  CampaignWinners campaigns_winners [not null]
+  UserDailyReports user_daily_reports [not null]
+  UserMonthlyReports user_monthly_reports [not null]
+  Followers follows [not null]
+  Following follows [not null]
+  Stories stories [not null]
+  DrawProductTicket draw_products_tickets [not null]
+  DrawProductWinner draw_products_winners [not null]
+}
+
+Table settings {
+  id String [pk]
+  userId String [unique, not null]
+  User users [not null]
+  language String [not null]
+  Mobiles mobiles [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table mobiles {
+  id String [pk]
+  settingsId String [not null]
+  Settings settings [not null]
+  deviceId String [unique, not null]
+  firebaseToken String
+  deviceOS String [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table personal_data {
+  id String [pk]
+  userId String [unique, not null]
+  user users [not null]
+  firstName String [not null]
+  lastName String [not null]
+  idCard String [unique, not null]
+  birthDate DateTime [not null]
+  phone String [unique, not null]
+  phoneVerified Boolean [not null, default: false]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  Address addresses
+  Sms sms [not null]
+}
+
+Table addresses {
+  id String [pk]
+  personalDataId String [unique, not null]
+  PersonalData personal_data [not null]
+  zipCode String [not null]
+  street String [not null]
+  number String
+  complement String
+  neighborhood String [not null]
+  city String [not null]
+  state String [not null]
+  country String [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table sms {
+  id String [pk]
+  personalDataId String [not null]
+  PersonalData personal_data [not null]
+  code Int [not null]
+  phone String [not null, default: '']
+  attempts Int [not null, default: 0]
+  campaignId String
+  messageId String
+  errorMessage String
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table payment_data {
+  id String [pk]
+  userId String [unique, not null]
+  user users [not null]
+  wallet String
+  token Decimal [not null, default: 0]
+  yupoints BigInt [not null, default: 0]
+  version Int [not null, default: 0]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  Withdraws withdraws [not null]
+}
+
+Table withdraws {
+  id String [pk]
+  paymentDataId String [not null]
+  paymentData payment_data [not null]
+  toWallet String [not null]
+  hash String [unique, not null]
+  grossValue Decimal [not null]
+  tax Decimal [not null]
+  netValue Decimal [not null]
+  success Boolean [not null, default: false]
+  transactionDate DateTime [default: `now()`, not null]
+}
+
+Table spotify_data {
+  id String [pk]
+  userId String [unique, not null]
+  User users [not null]
+  spotifyId String [unique, not null]
+  accessToken String [not null]
+  refreshToken String [not null]
+  expiresIn BigInt [not null]
+  createdAt DateTime [default: `now()`, not null]
+}
+
+Table heard_songs {
+  id String [pk]
+  userId String [not null]
+  user users [not null]
+  userRewardToken Decimal [not null]
+  userRewardYupoints Int [not null]
+  inviterId String
+  inviter users
+  inviterRewardToken Decimal
+  inviterRewardYupoints Int
+  songId String [not null]
+  Song songs [not null]
+  playlistId String [not null]
+  Playlist playlists [not null]
+  createdAt DateTime [default: `now()`, not null]
+}
+
+Table songs {
+  id String [pk]
+  songIdSpotify String [unique, not null]
+  artistIdSpotify String [not null]
+  seconds Int [not null]
+  giveToken Boolean [not null]
+  giveYupoints Boolean [not null]
+  tokenBrl Float [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  HeardSongs heard_songs [not null]
+  AllowedSongs allowed_songs [not null]
+  SongDailyReport song_daily_reports [not null]
+}
+
+Table playlists {
+  id String [pk]
+  playlistIdSpotify String [unique, not null]
+  playlistName String [not null]
+  playlistOwnerId String [not null]
+  createdAt DateTime [default: `now()`, not null]
+  HeardSongs heard_songs [not null]
+}
+
+Table allowed_songs {
+  id String [pk]
+  songId String [not null]
+  Song songs [not null]
+  campaignId String [not null]
+  Campaign campaigns [not null]
+  createdAt DateTime [default: `now()`, not null]
+
+  indexes {
+    (songId, campaignId) [unique]
+  }
+}
+
+Table campaigns {
+  id String [pk]
+  title String [not null]
+  description String [not null]
+  songsChunk Int [not null]
+  ticketPriceBrl Float [not null]
+  status Status [not null, default: 'planned']
+  awards String[] [not null]
+  startedAt DateTime
+  finishedAt DateTime
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  AllowedSongs allowed_songs [not null]
+  CampaignTickets campaigns_tickets [not null]
+  CampaignWinners campaigns_winners [not null]
+}
+
+Table campaigns_tickets {
+  id String [pk]
+  userId String [not null]
+  user users [not null]
+  campaignId String [not null]
+  campaign campaigns [not null]
+  ticketNumber Int [not null]
+  source Source [not null]
+  createdAt DateTime [default: `now()`, not null]
+
+  indexes {
+    (ticketNumber, campaignId) [unique]
+  }
+}
+
+Table campaigns_winners {
+  id String [pk]
+  userId String [not null]
+  user users [not null]
+  campaignId String [not null]
+  campaign campaigns [not null]
+  winnerPosition Int [not null]
+  paymentAt DateTime
+  createdAt DateTime [default: `now()`, not null]
+
+  indexes {
+    (campaignId, userId) [unique]
+  }
+}
+
+Table email_codes {
+  id String [pk]
+  userId String [not null]
+  User users [not null]
+  userEmail String [not null]
+  code String [not null]
+  expiresAt DateTime [not null]
+  active Boolean [not null, default: true]
+  emailSent Boolean [not null, default: false]
+  category Category [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table user_daily_reports {
+  id String [pk]
+  userId String [not null]
+  user users [not null]
+  date DateTime [not null]
+  sumUserRewardToken Decimal [not null]
+  sumUserRewardYupoints BigInt [not null]
+  sumInvitedRewardToken Decimal [not null]
+  sumInvitedRewardYupoints BigInt [not null]
+  heardSongsCount Int [not null]
+  createdAt DateTime [default: `now()`, not null]
+}
+
+Table user_monthly_reports {
+  id String [pk]
+  userId String [not null]
+  user users [not null]
+  month Int [not null]
+  year Int [not null]
+  sumUserRewardToken Decimal [not null]
+  sumUserRewardYupoints BigInt [not null]
+  sumInvitedRewardToken Decimal [not null]
+  sumInvitedRewardYupoints BigInt [not null]
+  heardSongsCount Int [not null]
+  createdAt DateTime [default: `now()`, not null]
+}
+
+Table song_daily_reports {
+  id String [pk]
+  songId String [not null]
+  song songs [not null]
+  date DateTime [not null]
+  playlist Json [not null]
+  sumUsersToken Decimal [not null]
+  sumUsersYupoints BigInt [not null]
+  sumInvitersToken Decimal [not null]
+  sumInvitersYupoints BigInt [not null]
+  heardSongsCount Int [not null]
+  createdAt DateTime [default: `now()`, not null]
+}
+
+Table follows {
+  id String [pk]
+  followerId String [not null]
+  follower users [not null]
+  followingId String [not null]
+  following users [not null]
+  createdAt DateTime [default: `now()`, not null]
+
+  indexes {
+    (followerId, followingId) [unique]
+  }
+}
+
+Table stories {
+  id String [pk]
+  userId String [not null]
+  user users [not null]
+  valid Boolean [not null, default: true]
+  imageUrl String [not null]
+  expiresAt DateTime [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table stake_phrases {
+  oldUserId String [unique, not null]
+  email String [not null]
+  password String [not null]
+  phrase String [not null]
+  tokenInStake String [not null]
+  tokenInWallet String [not null]
+  publicAddress String [not null]
+  privateAddress String [not null]
+  lastGetAt DateTime
+  createdAt DateTime [default: `now()`, not null]
+}
+
+Table draw_products_tickets {
+  id String [pk]
+  userId String [not null]
+  user users [not null]
+  drawProductId String [not null]
+  drawProduct draw_products [not null]
+  ticketNumber Int [not null]
+  source Source [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+
+  indexes {
+    (ticketNumber, drawProductId) [unique]
+  }
+}
+
+Table draw_products {
+  id String [pk]
+  title String [not null]
+  description String [not null]
+  priceToken Decimal [not null]
+  priceYupoints BigInt [not null]
+  status Status [not null, default: 'planned']
+  startedAt DateTime
+  finishedAt DateTime
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  DrawProductTickets draw_products_tickets [not null]
+  DrawProductWinners draw_products_winners [not null]
+}
+
+Table draw_products_winners {
+  id String [pk]
+  userId String [not null]
+  user users [not null]
+  drawProductId String [not null]
+  drawProduct draw_products [not null]
+  paymentAt DateTime
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+
+  indexes {
+    (drawProductId, userId) [unique]
+  }
+}
+
+Enum Status {
+  planned
+  active
+  paused
+  finished
+  canceled
+}
+
+Enum Source {
+  earned
+  app
+}
+
+Enum Category {
+  forgotPassword
+  emailConfirmation
+}
+
+Ref: users.invitedById - users.id
+
+Ref: settings.userId - users.id
+
+Ref: mobiles.settingsId > settings.id
+
+Ref: personal_data.userId - users.id
+
+Ref: addresses.personalDataId - personal_data.id
+
+Ref: sms.personalDataId > personal_data.id
+
+Ref: payment_data.userId - users.id
+
+Ref: withdraws.paymentDataId > payment_data.id
+
+Ref: spotify_data.userId - users.id
+
+Ref: heard_songs.userId > users.id
+
+Ref: heard_songs.inviterId > users.id
+
+Ref: heard_songs.songId > songs.id
+
+Ref: heard_songs.playlistId > playlists.id
+
+Ref: allowed_songs.songId > songs.id
+
+Ref: allowed_songs.campaignId > campaigns.id
+
+Ref: campaigns_tickets.userId > users.id
+
+Ref: campaigns_tickets.campaignId > campaigns.id
+
+Ref: campaigns_winners.userId > users.id
+
+Ref: campaigns_winners.campaignId > campaigns.id
+
+Ref: email_codes.userId > users.id
+
+Ref: user_daily_reports.userId > users.id
+
+Ref: user_monthly_reports.userId > users.id
+
+Ref: song_daily_reports.songId > songs.id
+
+Ref: follows.followerId > users.id
+
+Ref: follows.followingId > users.id
+
+Ref: stories.userId > users.id
+
+Ref: draw_products_tickets.userId > users.id
+
+Ref: draw_products_tickets.drawProductId > draw_products.id
+
+Ref: draw_products_winners.userId > users.id
+
+Ref: draw_products_winners.drawProductId > draw_products.id

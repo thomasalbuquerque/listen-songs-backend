@@ -1,0 +1,18 @@
+{
+  "not_found": "Payment data not found",
+  "insufficient_funds": "Insufficient funds",
+  "already_exists_for_this_user": "Payment data already exists for this user",
+  "insufficient_balance": "Insufficient balance",
+
+  "withdraw": {
+    "withdraws_not_found": "Withdraws not found",
+    "error_calculating_tax": "Error calculating withdrawal tax",
+    "error_while_performing_withdraw": "Error while performing the withdrawal. Contact support",
+    "push_notification": {
+      "success": {
+        "title": "Withdrawal request",
+        "body": "Your withdrawal of {property} tokens has been successfully processed. Soon you will receive the amount in your wallet."
+      }
+    }
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "not_found": "Dados pessoais não encontrados",
+  "already_exists_for_user": "Dados pessoais já existem para o usuário",
+  "phone_not_verified": "Telefone não verificado",
+  "phone_already_verified": "Número de telefone já verificado",
+
+  "sms": {
+    "sent_successfully": "SMS enviado com sucesso",
+    "already_sent": "SMS já enviado. Aguarde a chegada e valide o código",
+    "sent_exceeded": "Número de SMSs enviados excedido. Aguarde 7 dias para criar um novo código",
+    "attempts_exceeded": "Número de SMSs e tentativas excedido. Aguarde 7 dias para criar um novo código",
+    "error_sending": "Erro ao enviar SMS",
+    "attempts_for_this_sms_exceeded": "Número de tentativas para este SMS excedido. Peça outro SMS",
+    "invalid_code": "Código inválido",
+    "error_more_than_2_sms_in_7_days": "Ocorreu um erro anteriormente e mais de 2 SMS foram enviados nos últimos 7 dias",
+    "error_no_successful_sms_in_7_days": "Nenhum SMS bem-sucedido foi enviado na última semana. Solicite um novo SMS"
+  }
+}

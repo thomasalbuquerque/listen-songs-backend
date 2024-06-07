@@ -1,0 +1,21 @@
+{
+  "not_found": "Usuário não encontrado",
+  "already_connected": "Usuário já conectado",
+  "spotify_connected": "Usuário conectado com sucesso",
+  "spotify_already_linked": "Usuário já conectado",
+  "spotify_linked": "Usuário conectado com sucesso",
+  "spotify_disconnected": "Usuário desconectado com sucesso",
+  "invalid_spotify_code": "Código Spotify inválido",
+  "not_allowed": "Você não tem permissão para fazer isso",
+  "invalid": "Usuário inválido",
+  "invalid_email": "Email inválido",
+  "must_provide_old_password_to_update_password": "Você deve fornecer a senha antiga para atualizar a senha",
+  "new_email_cannot_be_the_same": "Novo email não pode ser o mesmo",
+  "new_username_cannot_be_the_same": "Novo nome de usuário não pode ser o mesmo",
+  "new_password_cannot_be_the_same": "Nova senha não pode ser a mesma",
+  "invalid_password": "Senha inválida",
+
+  "wallet": {
+    "does_not_have": "Usuário não possui um endereço de carteira"
+  }
+}

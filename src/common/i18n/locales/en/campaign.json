@@ -1,0 +1,15 @@
+{
+  "campaigns_not_found": "Campaigns not found",
+  "not_found": "Campaign not found",
+
+  "ticket": {
+    "tickets_not_found": "Tickets not found",
+    "not_found": "Ticket not found"
+  },
+
+  "winner": {
+    "winners_not_found": "Winners not found",
+    "not_found": "Winner not found",
+    "already_exists": "Winner already exists"
+  }
+}
