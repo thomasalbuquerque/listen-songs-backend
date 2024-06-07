@@ -2,7 +2,9 @@
 
 ## Description
 
-This is the repository of Listen Songs Backend, to serve Listen Songs App.
+This repository is a copy of an API built from scratch to serve a mobile application. In this mobile application, users were allowed to connect their accounts to their Spotify accounts, and for each song they listened in Spotify, they earned cryptocurrency tokens in Polygon network, so they could withdraw their tokens to their wallet addresses and, possibly, exchange for Reais.
+
+It works pretty well, has i18n in Pt-BR, En-US and Es-ES and the whole Documentation made in Swagger. Unfortunatelly, the project was cancelled, but anyways I am proud of it because I coded about 90% of it, trained another junior developer and learned a lot building it.
 
 ## How to run this server locally
 
