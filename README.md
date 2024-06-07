@@ -6,6 +6,10 @@ This repository is a copy of an API built from scratch to serve a mobile applica
 
 It works pretty well, has i18n in Pt-BR, En-US and Es-ES and the whole Documentation made in Swagger. Unfortunatelly, the project was cancelled, but anyways I am proud of it because I coded about 90% of it, trained another junior developer and learned a lot building it.
 
+## Stack
+
+NestJS, Typescript, Prisma, Postgres, Docker, RabbitMQ, AWS S3.
+
 ## How to run this server locally
 
 1. Run `yarn` to install all dependencies;
